@@ -9,6 +9,8 @@ class User < ApplicationRecord
   has_many :payments_made, class_name: "Settlement", foreign_key: :payer_id
   has_many :payments_received, class_name: "Settlement", foreign_key: :payee_id
 
+  before_save { self.email = email.downcase }
+
   validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false },
                     format: { with: URI::MailTo::EMAIL_REGEXP }
