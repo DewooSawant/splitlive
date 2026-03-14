@@ -9,6 +9,12 @@ Rails.application.routes.draw do
     namespace :v1 do
       post "auth/signup", to: "authentication#signup"
       post "auth/login", to: "authentication#login"
+
+      resources :groups, only: [:index, :show, :create] do
+        post "members", to: "members#create"
+        resources :expenses, only: [:index, :create]
+        resources :settlements, only: [:index, :create]
+      end
     end
   end
 end
