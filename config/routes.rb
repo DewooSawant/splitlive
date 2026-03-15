@@ -10,11 +10,11 @@ Rails.application.routes.draw do
       post "auth/signup", to: "authentication#signup"
       post "auth/login", to: "authentication#login"
 
-      resources :groups, only: [:index, :show, :create] do
+      resources :groups, only: [ :index, :show, :create ] do
         post "members", to: "members#create"
         get "balances", to: "groups#balances"
-        resources :expenses, only: [:index, :create]
-        resources :settlements, only: [:index, :create]
+        resources :expenses, only: [ :index, :create ]
+        resources :settlements, only: [ :index, :create ]
       end
     end
   end

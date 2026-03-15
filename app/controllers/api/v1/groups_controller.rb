@@ -1,7 +1,7 @@
 module Api
   module V1
     class GroupsController < ApplicationController
-      before_action :set_group, only: [:show, :balances]
+      before_action :set_group, only: [ :show, :balances ]
 
       def index
         groups = @current_user.groups

@@ -70,7 +70,7 @@ class BalanceCalculator
       debtor = debtors.first
 
       # The transfer amount is the minimum of what's owed and what's due
-      transfer = [creditor[:amount], debtor[:amount]].min.round(2)
+      transfer = [ creditor[:amount], debtor[:amount] ].min.round(2)
 
       transactions << {
         from: { id: debtor[:user_id], name: debtor[:name] },

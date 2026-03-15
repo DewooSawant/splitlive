@@ -7,7 +7,7 @@ RSpec.describe BalanceCalculator do
   let(:group) { create(:group, name: "Goa Trip", created_by: dewoo) }
 
   before do
-    group.members << [dewoo, rahul, priya]
+    group.members << [ dewoo, rahul, priya ]
   end
 
   describe "#user_balances" do
@@ -61,7 +61,7 @@ RSpec.describe BalanceCalculator do
 
       # Both Rahul and Priya owe Dewoo 300
       amounts = transactions.map { |t| t[:amount] }
-      expect(amounts).to match_array([300.0, 300.0])
+      expect(amounts).to match_array([ 300.0, 300.0 ])
 
       # All payments go TO Dewoo
       payees = transactions.map { |t| t[:to][:id] }
