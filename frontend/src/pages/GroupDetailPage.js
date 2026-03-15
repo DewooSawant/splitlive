@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { createConsumer } from '@rails/actioncable';
 import { useAuth } from '../context/AuthContext';
@@ -26,15 +26,7 @@ function GroupDetailPage() {
 
   // ─── Load Data ─────────────────────────────────────
 
-  useEffect(() => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-    loadAll();
-  }, [id, token]);
-
-  const loadAll = async () => {
+  const loadAll = useCallback(async () => {
     const [groupData, expensesData, balancesData] = await Promise.all([
       getGroup(token, id),
       getExpenses(token, id),
@@ -43,7 +35,15 @@ function GroupDetailPage() {
     setGroup(groupData);
     if (Array.isArray(expensesData)) setExpenses(expensesData);
     setBalances(balancesData);
-  };
+  }, [token, id]);
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    loadAll();
+  }, [token, navigate, loadAll]);
 
   // ─── WebSocket (Real-time) ─────────────────────────
 
@@ -65,7 +65,7 @@ function GroupDetailPage() {
       subscription.unsubscribe();
       cable.disconnect();
     };
-  }, [id, token]);
+  }, [id, token, loadAll]);
 
   // ─── Add Expense ──────────────────────────────────
 

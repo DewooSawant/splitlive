@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getGroups, createGroup } from '../api/api';
@@ -11,20 +11,20 @@ function GroupsPage() {
   const { token, user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const loadGroups = useCallback(async () => {
+    const data = await getGroups(token);
+    if (Array.isArray(data)) {
+      setGroups(data);
+    }
+  }, [token]);
+
   useEffect(() => {
     if (!token) {
       navigate('/login');
       return;
     }
     loadGroups();
-  }, [token]);
-
-  const loadGroups = async () => {
-    const data = await getGroups(token);
-    if (Array.isArray(data)) {
-      setGroups(data);
-    }
-  };
+  }, [token, navigate, loadGroups]);
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
