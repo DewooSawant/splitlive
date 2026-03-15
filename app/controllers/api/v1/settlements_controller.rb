@@ -15,7 +15,7 @@ module Api
         settlement.payer = @current_user
 
         if settlement.save
-          broadcast_settlement(settlement)
+          BalanceBroadcastJob.perform_later(@group.id, "new_settlement", settlement_response(settlement))
           render json: settlement_response(settlement), status: :created
         else
           render json: { errors: settlement.errors.full_messages }, status: :unprocessable_entity
@@ -31,15 +31,6 @@ module Api
 
       def settlement_params
         params.permit(:payee_id, :amount)
-      end
-
-      def broadcast_settlement(settlement)
-        calculator = BalanceCalculator.new(@group)
-        ActionCable.server.broadcast("group_#{@group.id}", {
-          type: "new_settlement",
-          settlement: settlement_response(settlement),
-          balances: calculator.calculate
-        })
       end
 
       def settlement_response(settlement)
