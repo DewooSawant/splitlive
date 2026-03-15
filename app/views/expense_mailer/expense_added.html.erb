@@ -1,0 +1,28 @@
+<h2>New Expense in <%= @group.name %></h2>
+
+<p><strong><%= @paid_by.name %></strong> added a new expense:</p>
+
+<table style="border-collapse: collapse; margin: 15px 0;">
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Description</td>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @expense.description %></td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Total Amount</td>
+    <td style="padding: 8px; border: 1px solid #ddd;">₹<%= @expense.amount %></td>
+  </tr>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Split Type</td>
+    <td style="padding: 8px; border: 1px solid #ddd;"><%= @expense.split_type.capitalize %></td>
+  </tr>
+  <% if @split %>
+  <tr>
+    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Your Share</td>
+    <td style="padding: 8px; border: 1px solid #ddd; color: #e53935; font-weight: bold;">₹<%= @split.amount_owed %></td>
+  </tr>
+  <% end %>
+</table>
+
+<p>Open SplitLive to view details and settle up.</p>
+
+<p style="color: #888; font-size: 12px;">— SplitLive</p>

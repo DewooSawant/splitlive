@@ -30,6 +30,7 @@ module Api
         end
 
         BalanceBroadcastJob.perform_later(@group.id, "new_expense", expense_response(expense))
+        ExpenseNotificationJob.perform_later(expense.id)
         render json: expense_response(expense), status: :created
       end
 
