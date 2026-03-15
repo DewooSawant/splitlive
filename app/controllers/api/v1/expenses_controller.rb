@@ -29,6 +29,7 @@ module Api
           splits.each { |split| split.save! }
         end
 
+        broadcast_to_group(expense)
         render json: expense_response(expense), status: :created
       end
 
@@ -104,6 +105,15 @@ module Api
           user = User.find(split[:user_id])
           expense.expense_splits.new(user: user, amount_owed: split[:amount].to_f)
         end
+      end
+
+      def broadcast_to_group(expense)
+        calculator = BalanceCalculator.new(@group)
+        ActionCable.server.broadcast("group_#{@group.id}", {
+          type: "new_expense",
+          expense: expense_response(expense),
+          balances: calculator.calculate
+        })
       end
 
       def expense_response(expense)
