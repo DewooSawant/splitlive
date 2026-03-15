@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
       resources :groups, only: [:index, :show, :create] do
         post "members", to: "members#create"
+        get "balances", to: "groups#balances"
         resources :expenses, only: [:index, :create]
         resources :settlements, only: [:index, :create]
       end

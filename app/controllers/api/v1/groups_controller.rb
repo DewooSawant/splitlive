@@ -1,7 +1,7 @@
 module Api
   module V1
     class GroupsController < ApplicationController
-      before_action :set_group, only: [:show]
+      before_action :set_group, only: [:show, :balances]
 
       def index
         groups = @current_user.groups
@@ -10,6 +10,17 @@ module Api
 
       def show
         render json: group_detail_response(@group)
+      end
+
+      def balances
+        calculator = BalanceCalculator.new(@group)
+        render json: {
+          user_balances: calculator.user_balances.map { |user_id, balance|
+            member = @group.members.find { |m| m.id == user_id }
+            { user: { id: user_id, name: member&.name }, balance: balance.round(2) }
+          },
+          simplified_debts: calculator.calculate
+        }
       end
 
       def create
@@ -26,7 +37,8 @@ module Api
       private
 
       def set_group
-        @group = @current_user.groups.find_by(id: params[:id])
+        group_id = params[:group_id] || params[:id]
+        @group = @current_user.groups.find_by(id: group_id)
         render json: { error: "Group not found" }, status: :not_found unless @group
       end
 
