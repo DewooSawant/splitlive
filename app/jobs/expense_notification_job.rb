@@ -9,6 +9,8 @@ class ExpenseNotificationJob < ApplicationJob
       next if member.id == expense.paid_by_id
 
       ExpenseMailer.expense_added(expense, member).deliver_now
+    rescue StandardError => e
+      Rails.logger.error "Failed to send email to #{member.email}: #{e.message}"
     end
   end
 end
