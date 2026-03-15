@@ -316,6 +316,84 @@ button:hover {
   border-radius: 10px;
 }
 
+/* ─── Split Type Selector ─────────────────────────── */
+.expense-form {
+  margin-bottom: 20px;
+}
+
+.expense-form > button {
+  margin-top: 10px;
+}
+
+.split-type-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.split-type-selector label {
+  font-size: 14px;
+  color: #666;
+}
+
+.split-btn {
+  padding: 6px 16px;
+  width: auto;
+  background: #eee;
+  color: #666;
+  font-size: 13px;
+  border-radius: 20px;
+}
+
+.split-btn.active {
+  background: #1db954;
+  color: white;
+}
+
+.split-btn:hover {
+  background: #ddd;
+}
+
+.split-btn.active:hover {
+  background: #1aa34a;
+}
+
+.split-inputs {
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 10px 0;
+}
+
+.split-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.split-input-row span:first-child {
+  width: 100px;
+  font-size: 14px;
+}
+
+.split-input-row input {
+  width: 100px;
+  margin-bottom: 0;
+}
+
+.split-input-row span:last-child {
+  font-size: 14px;
+  color: #888;
+}
+
+.split-hint {
+  font-size: 13px;
+  color: #888;
+  margin-top: 5px;
+}
+
 /* ─── Messages ────────────────────────────────────── */
 .error { color: #e53935; margin-bottom: 12px; font-size: 14px; }
 .message { color: #1db954; margin-bottom: 12px; font-size: 14px; }

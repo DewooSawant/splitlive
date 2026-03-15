@@ -20,6 +20,8 @@ function GroupDetailPage() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
+  const [splitType, setSplitType] = useState('equal');
+  const [splits, setSplits] = useState([]);
   const [memberEmail, setMemberEmail] = useState('');
   const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState('expenses');
@@ -73,22 +75,50 @@ function GroupDetailPage() {
     e.preventDefault();
     setMessage('');
 
-    const data = await createExpense(token, id, {
+    const expenseData = {
       description,
       amount: parseFloat(amount),
       category,
-      split_type: 'equal',
-    });
+      split_type: splitType,
+    };
+
+    if (splitType !== 'equal') {
+      expenseData.splits = splits;
+    }
+
+    const data = await createExpense(token, id, expenseData);
 
     if (data.id) {
       setDescription('');
       setAmount('');
       setCategory('');
+      setSplitType('equal');
+      setSplits([]);
       setMessage('Expense added!');
       loadAll();
     } else {
       setMessage(data.errors?.join(', ') || data.error || 'Failed to add expense');
     }
+  };
+
+  const handleSplitTypeChange = (type) => {
+    setSplitType(type);
+    if (type !== 'equal' && group?.members) {
+      setSplits(group.members.map((m) => ({
+        user_id: m.id,
+        name: m.name,
+        percentage: type === 'percentage' ? Math.floor(100 / group.members.length) : 0,
+        amount: 0,
+      })));
+    } else {
+      setSplits([]);
+    }
+  };
+
+  const updateSplitValue = (index, field, value) => {
+    const updated = [...splits];
+    updated[index] = { ...updated[index], [field]: parseFloat(value) || 0 };
+    setSplits(updated);
   };
 
   // ─── Add Member ───────────────────────────────────
@@ -172,29 +202,74 @@ function GroupDetailPage() {
       {/* ─── Expenses Tab ─── */}
       {activeTab === 'expenses' && (
         <div>
-          <form onSubmit={handleAddExpense} className="create-form">
-            <input
-              type="text"
-              placeholder="Description (e.g. Dinner)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-            <input
-              type="number"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              step="0.01"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Category (e.g. food)"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            />
-            <button type="submit">Add Expense (Equal Split)</button>
+          <form onSubmit={handleAddExpense} className="expense-form">
+            <div className="create-form">
+              <input
+                type="text"
+                placeholder="Description (e.g. Dinner)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+              <input
+                type="number"
+                placeholder="Amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                step="0.01"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Category (e.g. food)"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+            </div>
+
+            <div className="split-type-selector">
+              <label>Split type: </label>
+              {['equal', 'percentage', 'exact'].map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={splitType === type ? 'split-btn active' : 'split-btn'}
+                  onClick={() => handleSplitTypeChange(type)}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {splitType !== 'equal' && splits.length > 0 && (
+              <div className="split-inputs">
+                {splits.map((split, index) => (
+                  <div key={split.user_id} className="split-input-row">
+                    <span>{split.name}</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder={splitType === 'percentage' ? '%' : 'Amount'}
+                      value={splitType === 'percentage' ? split.percentage : split.amount}
+                      onChange={(e) => updateSplitValue(
+                        index,
+                        splitType === 'percentage' ? 'percentage' : 'amount',
+                        e.target.value
+                      )}
+                    />
+                    <span>{splitType === 'percentage' ? '%' : '₹'}</span>
+                  </div>
+                ))}
+                <p className="split-hint">
+                  {splitType === 'percentage'
+                    ? `Total: ${splits.reduce((s, x) => s + x.percentage, 0)}% (must be 100%)`
+                    : `Total: ₹${splits.reduce((s, x) => s + x.amount, 0).toFixed(2)} (must equal expense amount)`
+                  }
+                </p>
+              </div>
+            )}
+
+            <button type="submit">Add Expense</button>
           </form>
 
           <div className="expense-list">
