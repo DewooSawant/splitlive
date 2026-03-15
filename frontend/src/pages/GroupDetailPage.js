@@ -50,7 +50,8 @@ function GroupDetailPage() {
   useEffect(() => {
     if (!token) return;
 
-    const cable = createConsumer(`ws://localhost:3000/cable?token=${token}`);
+    const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:3000/cable';
+    const cable = createConsumer(`${wsUrl}?token=${token}`);
     const subscription = cable.subscriptions.create(
       { channel: 'GroupChannel', group_id: id },
       {

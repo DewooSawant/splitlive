@@ -22,3 +22,22 @@ services:
         value: production
       - key: RAILS_LOG_TO_STDOUT
         value: "true"
+      - key: FRONTEND_URL
+        value: "https://splitlive.onrender.com"
+
+  - type: web
+    name: splitlive
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        value: "https://splitlive-api.onrender.com/api/v1"
+      - key: REACT_APP_WS_URL
+        value: "wss://splitlive-api.onrender.com/cable"
